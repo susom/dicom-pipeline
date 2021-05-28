@@ -1,0 +1,1 @@
+SELECT  s.accession_number, count(DISTINCT r.series_instance_uid) srs FROM dicom_study s, dicom_series r, ajrr m WHERE s.study_instance_uid=r.study_instance_uid AND s.accession_number=m.accession_number GROUP BY s.accession_number;
