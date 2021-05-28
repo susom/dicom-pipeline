@@ -47,12 +47,14 @@ dcm_qa_updates = []
 
 def get_srs_updates ():
     postgres_hook = PostgresHook(postgres_conn_id='cloud-cdw-postgres')
-    records = postgres_hook.get_records(sql="SELECT s.accession_number, count(DISTINCT r.series_instance_uid) srs "
-                                            +"FROM dicom_study s, dicom_series r, ajrr m "+
-                                            "WHERE s.study_instance_uid=r.study_instance_uid AND "+
-                                            "s.accession_number=m.accession_number AND "+
-                                            "date_trunc('day',s.last_updated) > date_trunc('day',(CURRENT_DATE - 7)) "
-                                            "GROUP BY s.accession_number")
+    records = postgres_hook.get_records(sql=
+                                        "SELECT s.accession_number, " +
+                                        "count(DISTINCT r.series_instance_uid) srs " +
+                                        "FROM dicom_study s, dicom_series r, ajrr m "+
+                                        "WHERE s.study_instance_uid=r.study_instance_uid AND "+
+                                        "s.accession_number=m.accession_number AND "+
+                                        "date_trunc('day',s.last_updated) > date_trunc('day',(CURRENT_DATE - 7)) " +
+                                        "GROUP BY s.accession_number")
     #with open('/opt/airflow/logs/test.txt', 'w') as f:  # 'a' means to append
     #    for record in records:
     #        f.write("'" + f'{record[0]}' +"'\n")
@@ -78,7 +80,7 @@ def download_success() :
     records = oracle_hook.get_records(
         sql="select distinct accession_number from dcm_qa "
            + "where customer='Total Joint' and qa_pass='Y' "
-           + " and trunc(qa_date)>trunc(sysdate-7)")
+           + "and trunc(qa_date)>trunc(sysdate-7)")
 
     with open('/opt/airflow/logs/queue.txt', 'w') as f:  # 'a' means to append
         for record in records:
